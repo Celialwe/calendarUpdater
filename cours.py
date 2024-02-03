@@ -20,59 +20,65 @@ class Heure:
         except:
             print(h)
 
+
 class Courses:
-    def __init__(self, s : str, cal:icalendar.Calendar, month:int, year:int):
-        """
-        s : str est présenté comme suis
-        d
-        heure
-        cours
-
-        prof
-
-        local
-        """
-        self.day = int(s[0])
+    def __init__(self, l : list, cal:icalendar.Calendar, month:int, year:int):
+        self.day = int(l[0])
         self.month = month
         self.year = year
         self.cal = cal
-        self.s = s
+        self.l = l[1:]
 
     def retrieve_course_day(self):
         """
         sépare tous les cours de la journée
         """
-        s = self.s.split('\n')[1:]
-        for i in range(0, len(s), 6):
-            c = Course(s[i:i+6], self.cal,self.day, self.month, self.year)
+        cours = []
+        for elem in self.l:
+            if elem[0].isdigit() and len(cours) > 0:
+                c = Course(cours, self.cal, self.day, self.month, self.year)
+                c.create_event()
+                cours = [elem]
+            else:
+                cours.append(elem)
+        if len(cours) > 0:
+            c = Course(cours, self.cal, self.day, self.month, self.year)
             c.create_event()
-
 class Course:
     def __init__(self, s:list, cal:icalendar.Calendar,day:int, month:int, year:int):
         """
         s : list est présenté comme suis
-        heure, cours, \"\", prof, \"\", local
+        heure, cours, prof, local
         """
-        #s = s.split('\n')
-        #print(s)
+        self.s = s
         self.date = date(year, month, day)
-        self.heure = Heure(s[0])
-        self.cours = s[1]
-        self.prof = s[3]
-        self.local = s[5]
+        self.local = ''
+        for i in range(len(s)):
+            match i :
+                case 0: 
+                    self.heure = Heure(s[i])
+                case 1:
+                    self.cours = s[i]
+                case 2:
+                    self.prof = s[i]
+                case 3:
+                    self.local = s[i]
         self.cal = cal
-    
+    #TODO; comprendre pourquoi ça ne marche pas (event tous aglutiné dans un seul jour)
     def create_event(self):
         """
         crée un event avec les informations du cours
         """
         event = icalendar.Event()
-        event.add('summary', self.cours)
-        event.add('dtstart', datetime.combine(self.date, self.heure.startTime))
-        event.add('dtend', datetime.combine(self.date, self.heure.endTime))
-        event.add('location', self.local)
-        event.add('description', self.cours + ' - ' +self.prof)
-        self.cal.add_component(event)
-        
+        try :
+            event.add('summary', self.cours)
+            event.add('dtstart', datetime.combine(self.date, self.heure.startTime))
+            event.add('dtend', datetime.combine(self.date, self.heure.endTime))
+            event.add('location', self.local)
+            event.add('description', self.cours + ' - ' +self.prof)
+            self.cal.add_component(event)
+        except:
+            print(self.s)
+            
         
 

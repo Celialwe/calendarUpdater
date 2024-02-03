@@ -4,6 +4,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
+from calendar import monthrange
 import icalendar
 import time
 from cours import Courses
@@ -16,21 +17,6 @@ class WebScraping:
     def __init__(self, file = '/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listCourses.json'):
         self.file = file
         self.WAITING_TIME = 4
-        self.get_ical()
-
-    def scinder(self, s:str):
-        """
-        scinde une chaine de caractère en plusieurs chaines de caractères
-        """
-        s= s.split('\n')
-        res = []
-        for c in s:
-            if c.isdigit():
-                res.append(a)
-                a = c + '\n'
-            else:
-                a += c + '\n'
-        return res
 
     def upload_courses(self):
         """
@@ -73,32 +59,25 @@ class WebScraping:
         year = int(s[1])
         return month, year
 
-    def extract_courses(self, courses : list,month, year, fromStart = True):
+    def extract_courses(self, courses : list,month, year):
         """
         Etant donné une liste de cours, une année et un mois.
         Rajoute tous les cours du mois dans le calendrier défini précédemment
         """
         flag = False
-        
         for course in courses[1:]:
-            s = course.text.split('\n')
-            
-            if fromStart:
-                if s[0] == "1":
+            course = course.text.replace('\n\n', '\n')
+            course = course.split('\n')
+            #if month == 12:
+                #print(course)
+            if course[0] == "1":
                     flag = True
-            elif not fromStart:
-                if s[0] == str(datetime.now().day):
-                    flag = False
-            elif flag:
-                if s[0] == str(datetime.monthrange(year, month)[1]):
+            if flag and len(course) > 1 :
+                c = Courses(course, self.cal, month, year)
+                c.retrieve_course_day()
+                if course[0] == str(monthrange(year, month)[1]):
                     flag = False
                     break
-            if flag and len(s) > 1 :
-                with open('log.txt', 'a') as f:
-                    f.write(course.text[0] + '\n')
-                    f.write(course.text + '\n')
-                c = Courses(course.text, self.cal, month, year)
-                c.retrieve_course_day()
 
     def get_courses_month(self):
         #présenté comme suis
@@ -116,13 +95,8 @@ class WebScraping:
         )
         courses = self.browser.find_elements(By.TAG_NAME, 'td')
         month, year = self.get_month_year()
-        
-        if datetime.now().month == month:
-            self.extract_courses(courses, month, year, False)
-        else:
-            self.extract_courses(courses, month, year)
-           
-
+            
+        self.extract_courses(courses, month, year)
         
 
     def next_month(self):
@@ -131,6 +105,19 @@ class WebScraping:
         """
         next = self.browser.find_element(By.XPATH, '/html/body/div[1]/div[1]/div[3]/div[1]/button[2]')
         next.click()
+    
+    def previous_month(self):
+        """
+        click sur le bouton pour aller au mois précédent
+        """
+        prev = self.browser.find_element(By.XPATH, '/html/body/div[1]/div[1]/div[3]/div[1]/button[1]')
+        prev.click()
+    def back_to_september(self):
+        """
+        click sur le bouton pour aller au mois de septembre
+        """
+        while self.get_month_year()[0] != 9:
+            self.previous_month()
     
     def create_calendar(self):
         """
@@ -152,6 +139,7 @@ class WebScraping:
     
     def get_ical(self):
         self.upload_courses()
+        self.back_to_september()
         self.create_calendar()
       
         self.browser.close()
@@ -159,10 +147,12 @@ class WebScraping:
         
         
         
-
+if __name__ == "__main__":
+    # Replace these variables with your own values
+    
 #get_ical()
-web = WebScraping()
-
+    web = WebScraping()
+    web.get_ical()
 #test ical
 
 
