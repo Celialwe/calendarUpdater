@@ -7,16 +7,21 @@ class Heure:
         h : str est présenté comme suis
         heure_debut - heure_fin
         """
-        
-        heure_debut, heure_fin = h.split(' - ')
-        heure_debut = int(heure_debut.split(':')[0])
-        minute_debut = int(heure_debut.split(':')[1])
-        heure_fin = int(heure_fin.split(':')[0])
-        minute_fin = int(heure_fin.split(':')[1])
-        self.startTime = time(heure_debut, minute_debut)
-        self.endTime = time(heure_fin, minute_fin)
-class Course:
-    def __init__(self, s:str, cal:icalendar.Calendar, month:int, year:int):
+        try :
+            heure_debut, heure_fin = h.split(' - ')
+            hd = heure_debut.split(':')
+            heure_debut = int(hd[0])
+            minute_debut = int(hd[1])
+            hf = heure_fin.split(':')
+            heure_fin = int(hf[0])
+            minute_fin = int(hf[1])
+            self.startTime = time(heure_debut, minute_debut)
+            self.endTime = time(heure_fin, minute_fin)
+        except:
+            print(h)
+
+class Courses:
+    def __init__(self, s : str, cal:icalendar.Calendar, month:int, year:int):
         """
         s : str est présenté comme suis
         d
@@ -27,12 +32,34 @@ class Course:
 
         local
         """
-        s = s.split('\n')
-        self.date = date(year, month, int(s[0]))
-        self.heure = Heure(s[1])
-        self.cours = s[2]
-        self.prof = s[4]
-        self.local = s[6]
+        self.day = int(s[0])
+        self.month = month
+        self.year = year
+        self.cal = cal
+        self.s = s
+
+    def retrieve_course_day(self):
+        """
+        sépare tous les cours de la journée
+        """
+        s = self.s.split('\n')[1:]
+        for i in range(0, len(s), 6):
+            c = Course(s[i:i+6], self.cal,self.day, self.month, self.year)
+            c.create_event()
+
+class Course:
+    def __init__(self, s:list, cal:icalendar.Calendar,day:int, month:int, year:int):
+        """
+        s : list est présenté comme suis
+        heure, cours, \"\", prof, \"\", local
+        """
+        #s = s.split('\n')
+        #print(s)
+        self.date = date(year, month, day)
+        self.heure = Heure(s[0])
+        self.cours = s[1]
+        self.prof = s[3]
+        self.local = s[5]
         self.cal = cal
     
     def create_event(self):
