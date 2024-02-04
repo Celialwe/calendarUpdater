@@ -1,5 +1,6 @@
 from datetime import datetime, date, time
 import icalendar
+from pytz import timezone
 
 class Heure:
     def __init__(self, h:str):
@@ -70,10 +71,11 @@ class Course:
         crée un event avec les informations du cours
         """
         event = icalendar.Event()
+        tzone = timezone('Europe/Paris')
         try :
-            event.add('summary', self.cours)
-            event.add('dtstart', datetime.combine(self.date, self.heure.startTime))
-            event.add('dtend', datetime.combine(self.date, self.heure.endTime))
+            event.add('summary', self.cours + ' ' + self.local)
+            event.add('dtstart', datetime.combine(self.date, self.heure.startTime, tzinfo=tzone))
+            event.add('dtend', datetime.combine(self.date, self.heure.endTime, tzinfo=tzone))
             event.add('location', self.local)
             event.add('description', self.cours + ' - ' +self.prof)
             self.cal.add_component(event)
