@@ -12,7 +12,7 @@ class Main:
         self.dropboxPath = dropbox
         self.AppKey = "vhgy00ak8ap02dj"
         self.AppSecret = "8tun0ut3poesszo"
-        with open('files/token.txt', 'r') as file:
+        with open('/Users/celialowagie/Documents/GitHub/calendarUpdater/files/token.txt', 'r') as file:
             self.access_token = file.read()
             if len(self.access_token) == 0:
                 self.get_access_token()
@@ -22,7 +22,7 @@ class Main:
         print("Please enter your Dropbox access token.")
         print("Don't have one? You can generate one here: https://www.dropbox.com/developers/documentation/http/overview")
         self.access_token = input("Access token: ")
-        with open('files/token.txt', 'w') as file:
+        with open('/Users/celialowagie/Documents/GitHub/calendarUpdater/files/token.txt', 'w') as file:
             file.write(self.access_token)
     
     def get_access_token(self):
@@ -39,14 +39,14 @@ class Main:
         response = requests.post("https://api.dropboxapi.com/oauth2/token", data=data)
         access_token = response.json()["access_token"]
         refresh_token = response.json()["refresh_token"]
-        with open('files/refresh_token.txt', 'w') as file:
+        with open('/Users/celialowagie/Documents/GitHub/calendarUpdater/files/refresh_token.txt', 'w') as file:
             file.write(refresh_token)
-        with open('files/token.txt', 'w') as file:
+        with open('/Users/celialowagie/Documents/GitHub/calendarUpdater/files/token.txt', 'w') as file:
             file.write(access_token)
         self.access_token = access_token
     
     def refresh_access_token(self):
-        with open('files/refresh_token.txt', 'r') as file:
+        with open('/Users/celialowagie/Documents/GitHub/calendarUpdater/files/refresh_token.txt', 'r') as file:
             refresh_token = file.read()
         data = {
             "grant_type": "refresh_token",
@@ -56,7 +56,7 @@ class Main:
         }
         response = requests.post("https://api.dropboxapi.com/oauth2/token", data=data)
         access_token = response.json()["access_token"]
-        with open('files/token.txt', 'w') as file:
+        with open('/Users/celialowagie/Documents/GitHub/calendarUpdater/files/token.txt', 'w') as file:
             file.write(access_token)
         self.access_token = access_token
 
@@ -80,7 +80,7 @@ class Main:
 
             print("File uploaded successfully.")
         except AuthError as e:
-            with open('files/refresh_token.txt', 'r') as file:
+            with open('/Users/celialowagie/Documents/GitHub/calendarUpdater/files/refresh_token.txt', 'r') as file:
                 refresh = file.read()
                 if len(refresh)  == 0:
                     self.get_access_token()
@@ -94,9 +94,8 @@ class Main:
 if __name__ == "__main__":
     # Replace these variables with your own values
 
-    dropbox_access_token = "sl.BvBqdoApV8-EPYNcAbwVIGX-Q_BaNUtlf5AUf3jWUEr5eqpYH0wDP6ELszokMJ4xT1iDW-3C2DR8LAlfWbHA7XNQyRDUB5kmBBeeLd0rZ2_86e-PmMR7GAM-7DGbBV298WpDyiIZfbGQMSlJMUNl"
 
-    local_file_path = 'files/my.ics'
+    local_file_path = '/Users/celialowagie/Documents/GitHub/calendarUpdater/files/my.ics'
     dropbox_path = '/my.ics'
 
     updater = WebScraping()

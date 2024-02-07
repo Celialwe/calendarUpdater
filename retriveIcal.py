@@ -133,7 +133,7 @@ class WebScraping:
             self.get_courses_month()
             if self.get_month_year()[0] == 8:
                 break
-        with open('files/my.ics', 'wb') as f:
+        with open('/Users/celialowagie/Documents/GitHub/calendarUpdater/files/my.ics', 'wb') as f:
             f.write(self.cal.to_ical())
     
     
