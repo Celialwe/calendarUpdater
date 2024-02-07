@@ -73,7 +73,11 @@ class Course:
         event = icalendar.Event()
         tzone = timezone('Europe/Paris')
         try :
-            event.add('summary', self.cours + ' ' + self.local)
+            if self.local == '':
+                
+                event.add('summary', self.course)
+            else:
+                event.add('summary', self.cours + ' - ' + self.local)
             event.add('dtstart', datetime.combine(self.date, self.heure.startTime, tzinfo=tzone))
             event.add('dtend', datetime.combine(self.date, self.heure.endTime, tzinfo=tzone))
             event.add('location', self.local)
