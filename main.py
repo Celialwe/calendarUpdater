@@ -10,8 +10,9 @@ class Main:
     def __init__(self, local, dropbox):
         self.localPath = local
         self.dropboxPath = dropbox
-        self.AppKey = "vhgy00ak8ap02dj"
-        self.AppSecret = "8tun0ut3poesszo"
+        with open("/Users/celialowagie/Documents/GitHub/calendarUpdater/files/appCredentials.txt") as file:
+            self.AppKey = file.readline().strip()
+            self.AppSecret = file.readline().strip()
         with open('/Users/celialowagie/Documents/GitHub/calendarUpdater/files/token.txt', 'r') as file:
             self.access_token = file.read()
             if len(self.access_token) == 0:
