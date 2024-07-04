@@ -1,3 +1,17 @@
+#!/Users/celialowagie/miniconda3/envs/calendarUpdater/bin/python
+
+# Required parameters:
+# @raycast.schemaVersion 1
+# @raycast.title updateHoraire
+# @raycast.mode fullOutput
+
+# Optional parameters:
+# @raycast.icon 🤖
+
+# Documentation:
+# @raycast.description update the calendar
+
+import os
 from retriveIcal import WebScraping
 import dropbox
 from dropbox.exceptions import AuthError
@@ -94,12 +108,16 @@ class Main:
 
 if __name__ == "__main__":
     # Replace these variables with your own values
+    for listcours in os.listdir("/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCours"):
 
+        nom = listcours.split('.')[0]
 
-    local_file_path = '/Users/celialowagie/Documents/GitHub/calendarUpdater/files/my.ics'
-    dropbox_path = '/my.ics'
+        updater = WebScraping(f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCours/{listcours}')
+        updater.get_ical(nom)
 
-    updater = WebScraping()
-    updater.get_ical()
-    m = Main(local_file_path, dropbox_path)
-    m.upload_to_dropbox()
+        local_file_path = f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCalend/{nom}.ics'
+        dropbox_path = f'/{nom}.ics'
+
+    
+        m = Main(local_file_path, dropbox_path)
+        m.upload_to_dropbox()

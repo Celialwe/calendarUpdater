@@ -53,9 +53,9 @@ class WebScraping:
         retourne le mois et l'année actuelle sur la page
         """
         month = self.browser.find_element(By.ID, 'fc-dom-1')
-        dico = {"Janvier":1, "Février":2, "Mars":3, "Avril":4, "Mai":5, "Juin":6, "Juillet":7, "Août":8, "Septembre":9, "Octobre":10, "Novembre":11, "Décembre":12}
+        dico = {"janvier":1, "février":2, "mars":3, "avril":4, "mai":5, "juin":6, "juillet":7, "août":8, "septembre":9, "octobre":10, "novembre":11, "décembre":12}
         s = month.text.split(' ')
-        month = dico[s[0]]
+        month = dico[s[0].lower()]
         year = int(s[1])
         return month, year
 
@@ -119,7 +119,7 @@ class WebScraping:
         while self.get_month_year()[0] != 9:
             self.previous_month()
     
-    def create_calendar(self):
+    def create_calendar(self, nom : str):
         """
         crée un calendrier
         """
@@ -133,14 +133,14 @@ class WebScraping:
             self.get_courses_month()
             if self.get_month_year()[0] == 8:
                 break
-        with open('/Users/celialowagie/Documents/GitHub/calendarUpdater/files/my.ics', 'wb') as f:
+        with open(f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCalend/{nom}.ics', 'wb') as f:
             f.write(self.cal.to_ical())
     
     
-    def get_ical(self):
+    def get_ical(self, nom : str):
         self.upload_courses()
         self.back_to_september()
-        self.create_calendar()
+        self.create_calendar(nom)
       
         self.browser.close()
         self.browser.quit()
@@ -149,11 +149,11 @@ class WebScraping:
         
 if __name__ == "__main__":
     # Replace these variables with your own values
-    
-#get_ical()
-    web = WebScraping()
-    web.get_ical()
-#test ical
+    for listcours in os.listdir("/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCours"):
+
+        web = WebScraping(f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCours/{listcours}')
+        web.get_ical(listcours.split('.')[0])
+
 
 
 

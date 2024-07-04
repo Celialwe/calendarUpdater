@@ -36,6 +36,8 @@ class Courses:
         """
         cours = []
         for elem in self.l:
+            if len(elem) == 0:
+                continue
             if elem[0].isdigit() and len(cours) > 0:
                 c = Course(cours, self.cal, self.day, self.month, self.year)
                 c.create_event()
