@@ -7,6 +7,7 @@ from datetime import datetime
 from calendar import monthrange
 import icalendar
 import time
+from pytz import timezone
 from cours import Courses
 import os
 
@@ -14,11 +15,14 @@ import os
 
 class WebScraping:
 
-    def __init__(self, file = '/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listCourses.json'):
+    def __init__(self, file = '/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listCourses.json', calendrier = ''):
         self.file = file
+        with open(calendrier, 'rb') as f:
+            self.calendrier = icalendar.Calendar.from_ical(f.read())
+         
         self.WAITING_TIME = 4
 
-    def upload_courses(self):
+    def  upload_courses(self):
         """
         upload le fichier json contenant les cours et met l'horaire en mode mois
         """
@@ -112,21 +116,33 @@ class WebScraping:
         """
         prev = self.browser.find_element(By.XPATH, '/html/body/div[1]/div[1]/div[3]/div[1]/button[1]')
         prev.click()
-    def back_to_september(self):
-        """
-        click sur le bouton pour aller au mois de septembre
-        """
-        while self.get_month_year()[0] != 9:
-            self.previous_month()
     
+    
+    def delete_events_after_date(self):
+        """
+        create calendar with events that have already passed
+        """
+        currentDate = datetime.now()
+        cutoff_date = datetime(currentDate.year,currentDate.month, 1, tzinfo= timezone("Europe/Brussels"))
+        events_to_keep = []
+        for component in self.calendrier.walk():
+            if component.name == "VEVENT":
+                event_date = component.get('DTSTART').dt
+                if event_date < cutoff_date:
+                    events_to_keep.append(component)
+        # Créer un nouveau calendrier avec les événements restants
+        self.cal = icalendar.Calendar()
+        self.cal.add('prodid', '-//My calendar//example.com//')
+        self.cal.add('version', '2.0')
+        for event in events_to_keep:
+            self.cal.add_component(event)
+
     def create_calendar(self, nom : str):
         """
         crée un calendrier
         """
-       
-        self.cal = icalendar.Calendar()
-        self.cal.add('prodid', '-//My calendar//example.com//')
-        self.cal.add('version', '2.0')
+
+        self.delete_events_after_date()
         self.get_courses_month()
         while True:
             self.next_month()
@@ -139,13 +155,12 @@ class WebScraping:
     
     def get_ical(self, nom : str):
         self.upload_courses()
-        self.back_to_september()
         self.create_calendar(nom)
       
         self.browser.close()
         self.browser.quit()
         
-        
+
         
 if __name__ == "__main__":
     # Replace these variables with your own values

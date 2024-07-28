@@ -12,6 +12,8 @@
 # @raycast.description update the calendar
 
 import os
+
+import icalendar
 from retriveIcal import WebScraping
 import dropbox
 from dropbox.exceptions import AuthError
@@ -106,18 +108,31 @@ class Main:
         except Exception as e:
             print(f"Error uploading file: {e}")
 
+def create_ical(filename : str):
+    cal = icalendar.Calendar()
+    cal.add('prodid', '-//My calendar product//mxm.dk//')
+    cal.add('version', '2.0')
+    with open(f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCalend/{filename}.ics', 'wb') as f:
+        f.write(cal.to_ical())
+
 if __name__ == "__main__":
     # Replace these variables with your own values
     for listcours in os.listdir("/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCours"):
-
+        
+        if listcours == '.DS_Store':
+            continue
         nom = listcours.split('.')[0]
-
-        updater = WebScraping(f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCours/{listcours}')
+        calendarDoc = f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCalend'
+        if len(os.listdir(calendarDoc)) < len(nom):
+            #TODO faire en sorte que ça marche même si le calendrier n'est pas là
+            for i in range(len(os.listdir(calendarDoc)),len(nom)):
+                create_ical(nom)
+            
+        updater = WebScraping(f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCours/{listcours}', f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCalend/{nom}.ics')
         updater.get_ical(nom)
 
         local_file_path = f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCalend/{nom}.ics'
         dropbox_path = f'/{nom}.ics'
-
     
         m = Main(local_file_path, dropbox_path)
         m.upload_to_dropbox()

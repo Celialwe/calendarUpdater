@@ -2,6 +2,9 @@ from datetime import datetime, date, time
 import icalendar
 from pytz import timezone
 
+"""
+Create a class to handle the courses
+"""
 class Heure:
     def __init__(self, h:str):
         """
@@ -76,7 +79,6 @@ class Course:
         tzone = timezone('Europe/Paris')
         try :
             if self.local == '':
-                
                 event.add('summary', self.course)
             else:
                 event.add('summary', self.cours + ' - ' + self.local)

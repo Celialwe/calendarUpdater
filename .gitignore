@@ -1,5 +1,8 @@
-
 files/my.ics
 files/token.txt
 files/appCredentials.txt
-.DS_Store
+*.DS_Store
+files/listeCalend
+files/listeCours
+files/token.txt
+*.pyc
