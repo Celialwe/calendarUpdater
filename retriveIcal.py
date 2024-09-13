@@ -12,10 +12,10 @@ from cours import Courses
 import os
 
 
-
+filePath = os.path.join(os.getcwd(), "files") 
 class WebScraping:
 
-    def __init__(self, file = '/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listCourses.json', calendrier = ''):
+    def __init__(self, file = os.path.join(os.getcwd(), "listCourses.json"), calendrier = ''):
         self.file = file
         with open(calendrier, 'rb') as f:
             self.calendrier = icalendar.Calendar.from_ical(f.read())
@@ -149,7 +149,7 @@ class WebScraping:
             self.get_courses_month()
             if self.get_month_year()[0] == 8:
                 break
-        with open(f'/Users/celialowagie/Documents/GitHub/calendarUpdater/files/listeCalend/{nom}.ics', 'wb') as f:
+        with open(os.path.join(filePath, 'listeCalend', f'{nom}.ics'), 'wb') as f:
             f.write(self.cal.to_ical())
     
     
